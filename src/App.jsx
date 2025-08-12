@@ -3,7 +3,8 @@ import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import New from "./pages/New";
 import Diary from "./pages/Diary";
-import Notfound from "./pages/NotFound";
+import Notfound from "./pages/Notfound";
+import Button from "./components/Button";
 
 import { getEmotionImage } from "./util/get-emotion-image";
 
@@ -20,19 +21,28 @@ function App() {
 
   return (
     <>
-      <div>
-        <img src={getEmotionImage(1)} />
-        <img src={getEmotionImage(2)} />
-        <img src={getEmotionImage(3)} />
-        <img src={getEmotionImage(4)} />
-        <img src={getEmotionImage(5)} />
-      </div>
-      <div>
-        <Link to={"/"}>Home</Link>
-        <Link to={"/new"}>New</Link>
-        <Link to={"/diary"}>Diary</Link>
-      </div>
-      <button omClick>New페이지로 이동</button>
+      <Button
+        text={"123"}
+        onClick={() => {
+          console.log("123");
+        }}
+      />
+
+      <Button
+        text={"123"}
+        type={"POSITIVE"}
+        onClick={() => {
+          console.log("123");
+        }}
+      />
+
+      <Button
+        text={"123"}
+        type={"NEGATIVE"}
+        onClick={() => {
+          console.log("123");
+        }}
+      />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/new" element={<New />} />

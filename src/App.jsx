@@ -1,61 +1,100 @@
 import "./App.css";
+import { useReducer, useRef, createContext } from "react";
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import Home from "./pages/Home";
 import New from "./pages/New";
 import Diary from "./pages/Diary";
 import Notfound from "./pages/Notfound";
+import Edit from "./pages/Edit";
+
 import Button from "./components/Button";
 import Header from "./components/Header";
 
 import { getEmotionImage } from "./util/get-emotion-image";
 
-//1. "/" 모든 일기를 조회하는 home페이지
-//2. "/new" 새로운 일기를 작성하는 new 페이지
-//3. "/diary" 일기를 상세히 조회하는 diary 페이지
-//4. "/*" *은 wildcard, 위에 잇는 경로에 일치하지않았을때 여기로
-function App() {
-  const nav = useNavigate(); // useNavigate를 호출했을 때 반환되는 내비게이팅 함수를 이 nav라는 변수에 저장
+const mockData = [
+  {
+    id: 1,
+    createDat: new Date().getTime(),
+    emotionId: 1,
+    content: "1번 일기 내용",
+  },
 
-  const onClickButton = () => {
-    nav("/new");
+  {
+    id: 2,
+    createDat: new Date().getTime(),
+    emotionId: 2,
+    content: "2번 일기 내용",
+  },
+];
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "CREATE":
+      return [action.data, ...state];
+    case "UPDATE":
+      return state.map((item) =>
+        String(item.id) === String(action.data.id) ? action.data : item
+      );
+    case "DELETE":
+      return state.filter((item) => String(item.id) !== String(action.id)); //아이템 중에 아이템 아이디가 액션 아이디와 같지 않은요소들만 필터링해서 리턴, 액션아이디와 같은 애들은 삭제됨
+  }
+}
+
+const DiaryStateContext = createContext();
+const DiaryDispatchContext = createContext();
+
+function App() {
+  const [data, dispatch] = useReducer(reducer, mockData);
+  const idRef = useRef(3);
+
+  //새로운 일기 추가
+  const onCreate = (createDate, emotionId, content) => {
+    dispatch({
+      type: "CREATE",
+      data: {
+        id: idRef.current++,
+        createDate,
+        emotionId,
+        content,
+      },
+    });
+  };
+
+  //기존 일기 수정
+  const onUpdate = (id, createdData, emotionId, content) => {
+    dispatch({
+      type: "UPDATE",
+      data: {
+        id,
+        createdData,
+        emotionId,
+        content,
+      },
+    });
+  };
+
+  //기존 일기 삭제
+  const onDelete = (id) => {
+    dispatch({
+      type: "DELETE",
+      id,
+    });
   };
 
   return (
     <>
-      <Header
-        title={"Heater"}
-        leftChild={<Button text={"Left"} />}
-        rightChild={<Button text={"Right"} />}
-      />
-
-      <Button
-        text={"123"}
-        onClick={() => {
-          console.log("123");
-        }}
-      />
-
-      <Button
-        text={"123"}
-        type={"POSITIVE"}
-        onClick={() => {
-          console.log("123");
-        }}
-      />
-
-      <Button
-        text={"123"}
-        type={"NEGATIVE"}
-        onClick={() => {
-          console.log("123");
-        }}
-      />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/new" element={<New />} />
-        <Route path="/diary:id" element={<Diary />} />
-        <Route path="*" element={<Notfound />} />
-      </Routes>
+      <DiaryStateContext.Provider value={data}>
+        <DiaryDispatchContext.Provider value={{ onCreate, onDelete, onUpdate }}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/new" element={<New />} />
+            <Route path="/diary/:id" element={<Diary />} />
+            <Route path="/edit/:id" element={<Edit />} />
+            <Route path="*" element={<Notfound />} />
+          </Routes>
+        </DiaryDispatchContext.Provider>
+      </DiaryStateContext.Provider>
     </>
   );
 }

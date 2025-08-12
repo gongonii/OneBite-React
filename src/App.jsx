@@ -5,6 +5,7 @@ import New from "./pages/New";
 import Diary from "./pages/Diary";
 import Notfound from "./pages/Notfound";
 import Button from "./components/Button";
+import Header from "./components/Header";
 
 import { getEmotionImage } from "./util/get-emotion-image";
 
@@ -21,6 +22,12 @@ function App() {
 
   return (
     <>
+      <Header
+        title={"Heater"}
+        leftChild={<Button text={"Left"} />}
+        rightChild={<Button text={"Right"} />}
+      />
+
       <Button
         text={"123"}
         onClick={() => {

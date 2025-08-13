@@ -15,16 +15,22 @@ import { getEmotionImage } from "./util/get-emotion-image";
 const mockData = [
   {
     id: 1,
-    createDat: new Date().getTime(),
+    createdDate: new Date("2025-08-13").getTime(),
     emotionId: 1,
     content: "1번 일기 내용",
   },
 
   {
     id: 2,
-    createDat: new Date().getTime(),
+    createdDate: new Date("2025-08-12").getTime(),
     emotionId: 2,
     content: "2번 일기 내용",
+  },
+  {
+    id: 3,
+    createdDate: new Date("2025-07-18").getTime(),
+    emotionId: 3,
+    content: "3번 일기 내용",
   },
 ];
 
@@ -41,20 +47,22 @@ function reducer(state, action) {
   }
 }
 
-const DiaryStateContext = createContext();
-const DiaryDispatchContext = createContext();
+//모든 페이지에서 기능을 사용해야해서 앱 컴퍼넌트에다가 배치
+
+export const DiaryStateContext = createContext();
+export const DiaryDispatchContext = createContext();
 
 function App() {
   const [data, dispatch] = useReducer(reducer, mockData);
   const idRef = useRef(3);
 
   //새로운 일기 추가
-  const onCreate = (createDate, emotionId, content) => {
+  const onCreate = (createdDate, emotionId, content) => {
     dispatch({
       type: "CREATE",
       data: {
         id: idRef.current++,
-        createDate,
+        createdDate,
         emotionId,
         content,
       },
@@ -81,11 +89,18 @@ function App() {
       id,
     });
   };
-
+  //props Drilling 방지<DiaryStateContext.Provider value={data}>, <DiaryDispatchContext.Provider
+  // 일기데이터를 모든 페이지에 공급
   return (
     <>
       <DiaryStateContext.Provider value={data}>
-        <DiaryDispatchContext.Provider value={{ onCreate, onDelete, onUpdate }}>
+        <DiaryDispatchContext.Provider
+          value={{
+            onCreate,
+            onDelete,
+            onUpdate,
+          }}
+        >
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/new" element={<New />} />

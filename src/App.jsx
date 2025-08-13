@@ -70,12 +70,12 @@ function App() {
   };
 
   //기존 일기 수정
-  const onUpdate = (id, createdData, emotionId, content) => {
+  const onUpdate = (id, createdDate, emotionId, content) => {
     dispatch({
       type: "UPDATE",
       data: {
         id,
-        createdData,
+        createdDate,
         emotionId,
         content,
       },

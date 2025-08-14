@@ -2,7 +2,7 @@
 import "./Editor.css";
 import EmotionItem from "./EmotionItem";
 import Button from "./Button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const emotionList = [
@@ -44,13 +44,22 @@ const getStringedDate = (targetDate) => {
   return `${year}-${month}-${date}`;
 };
 
-const Editor = ({ onSubmit }) => {
-  const nav = useNavigate();
+const Editor = ({ initData, onSubmit }) => {
   const [input, setInput] = useState({
     createdDate: new Date(),
     emotionId: 3,
     content: "",
   }); //사용자가 입력한 정보들을 하나의 state에 저장
+  const nav = useNavigate();
+
+  useEffect(() => {
+    if (initData) {
+      setInput({
+        ...initData,
+        createdDate: new Date(Number(initData.createdDate)),
+      });
+    }
+  }, [initData]); // initData가 변경될 때마다 setInput을 가져와서 모든 데이터 다시 넣기
 
   //date객체로 변환하기
   const onChangeInput = (e) => {
